@@ -8,4 +8,20 @@
 
 label {
   font-weight: bold;
+  color: #595858;
+}
+
+#total_casos_confirmados > .col-sm-12 > .card {
+  border-top: 5px solid;
+  border-top-color: #ff9000;
+}
+
+#total_mortes > .col-sm-12 > .card {
+  border-top: 5px solid;
+  border-top-color: #d60404;
+}
+
+#total_casos_recuperados > .col-sm-12 > .card {
+  border-top: 5px solid;
+  border-top-color: #198c00;
 }
