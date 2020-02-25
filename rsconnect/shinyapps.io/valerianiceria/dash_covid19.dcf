@@ -1,0 +1,12 @@
+name: dash_covid19
+title: dash_covid19
+username:
+account: valerianiceria
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 1862341
+bundleId: 2829138
+url: https://valerianiceria.shinyapps.io/dash_covid19/
+when: 1582659783.2449
+asMultiple: FALSE
+asStatic: FALSE
