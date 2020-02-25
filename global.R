@@ -1,9 +1,10 @@
-# install.packages(c("tidyverse", "shiny", "tablerDash", "shinycssloaders"))
+# install.packages(c("tidyverse", "shiny", "tablerDash", "shinycssloaders", "zoo"))
 
 library(tidyverse)
 library(shiny)
 library(tablerDash)
 library(shinycssloaders)
+library(zoo)
 
 obter_dados <- function() {
   
@@ -63,6 +64,9 @@ obter_dados <- function() {
     left_join(
       df_casos_curados,
       by = c("Province.State", "Country.Region", "Lat", "Long", "data")
+    ) %>% 
+    mutate(
+      Mes = as.yearmon(data)
     )
 
   return(dados)

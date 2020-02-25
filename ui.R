@@ -1,6 +1,10 @@
+source("./global.R", encoding = "utf-8")
+
+dados_covid = obter_dados()
+
 ui <- tags$html(
   tags$head(
-    tags$link(rel = "stylesheet", type = "text/css", href = "style.css"),
+    tags$link(rel = "stylesheet", type = "text/css", href = "css/style.css"),
     tags$link(rel="icon", href="image/favicon.png", type="image/x-icon"),
     tags$script(HTML('
          $(document).ready(function() {
@@ -18,7 +22,31 @@ ui <- tags$html(
     tablerDashPage(
       navbar = tablerDashNav(
         id = "menuCovid",
-        src = "img/logo.png"
+        src = "img/logo.png",
+        selectInput(
+          "select_regiao",
+          "Selecione uma região:",
+          choices = c("Todas", 
+                      as.character(
+                        dados_covid %>%
+                          arrange(Country.Region) %>%
+                          pull(Country.Region)
+                        )
+                      )
+        ),
+        selectInput(
+          "select_mes",
+          "Selecione um mês:",
+          choices = c("Todos", 
+                      as.character(
+                        dados_covid %>%
+                          filter(!is.na(Mes)) %>% 
+                          arrange(Mes) %>%
+                          pull(Mes) %>% 
+                          unique()
+                      )
+          )
+        )
       ),
 
       title = "COVID-19",

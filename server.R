@@ -1,3 +1,7 @@
+source("./global.R", encoding = "utf-8")
+
+dados_covid = obter_dados()
+
 server <- function(input, output, server) {
   
   output$total_casos_confirmados <- renderUI({
