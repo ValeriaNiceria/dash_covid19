@@ -45,6 +45,20 @@ ui <- tags$html(
           tablerTabItem(
             
             tabName = "home",
+
+            fluidRow(
+              id="row-data",
+              column(
+                width = 12,
+                span(
+                  id="span-data",
+                  paste(
+                    "* Dados do dia:",
+                    obter_ultima_data(dados = dados_covid)
+                  )
+                )
+              )
+            ),
             
             fluidRow(
               column(

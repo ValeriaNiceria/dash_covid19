@@ -65,9 +65,18 @@ obter_dados <- function() {
       df_casos_curados,
       by = c("Province.State", "Country.Region", "Lat", "Long", "data")
     ) %>% 
+    filter(!is.na(data)) %>% 
     mutate(
       Mes = as.yearmon(data)
     )
 
   return(dados)
+}
+
+obter_ultima_data <- function(dados) {
+  dados %>%
+    arrange(data) %>%
+    pull(data) %>%
+    unique() %>%
+    last()
 }

@@ -17,7 +17,6 @@ server <- function(input, output, session) {
     
     total_casos <- 
       dados %>% 
-      filter(!is.na(data)) %>%
       group_by(data) %>% 
       summarise(total = sum(casos_confirmados)) %>% 
       dplyr::select(total) %>% 
@@ -45,7 +44,6 @@ server <- function(input, output, session) {
     
     total_mortes <-
       dados %>% 
-      filter(!is.na(data)) %>%
       group_by(data) %>% 
       summarise(total = sum(mortes)) %>% 
       dplyr::select(total) %>% 
@@ -72,8 +70,7 @@ server <- function(input, output, session) {
     }
     
     total_recuperados <- 
-      dados %>% 
-      filter(!is.na(data)) %>%
+      dados %>%
       group_by(data) %>% 
       summarise(total = sum(casos_curados)) %>% 
       dplyr::select(total) %>% 

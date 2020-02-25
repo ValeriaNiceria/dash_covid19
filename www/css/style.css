@@ -25,3 +25,17 @@ label {
   border-top: 5px solid;
   border-top-color: #198c00;
 }
+
+#row-data {
+  margin-top: -30px;
+  margin-bottom: 10px;
+}
+
+#span-data {
+  font-style: italic;
+  background: #d6a9b6;
+  border-radius: 5px;
+  padding: 5px;
+  margin-bottom: 10px;
+  float: right;
+}
