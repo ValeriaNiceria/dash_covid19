@@ -33,19 +33,6 @@ ui <- tags$html(
                           pull(Country.Region)
                         )
                       )
-        ),
-        selectInput(
-          "select_mes",
-          "Selecione um mês:",
-          choices = c("Todos", 
-                      as.character(
-                        dados_covid %>%
-                          filter(!is.na(Mes)) %>% 
-                          arrange(Mes) %>%
-                          pull(Mes) %>% 
-                          unique()
-                      )
-          )
         )
       ),
 

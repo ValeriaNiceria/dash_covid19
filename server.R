@@ -2,12 +2,21 @@ source("./global.R", encoding = "utf-8")
 
 dados_covid = obter_dados()
 
-server <- function(input, output, server) {
-  
+server <- function(input, output, session) {
+
   output$total_casos_confirmados <- renderUI({
     
+    regiao_selecionado <- input$select_regiao
+    
+    dados <- dados_covid
+
+    if (regiao_selecionado != "Todas") {
+      dados <- dados %>% 
+        filter(Country.Region == regiao_selecionado)
+    }
+    
     total_casos <- 
-      dados_covid %>% 
+      dados %>% 
       filter(!is.na(data)) %>%
       group_by(data) %>% 
       summarise(total = sum(casos_confirmados)) %>% 
@@ -25,8 +34,17 @@ server <- function(input, output, server) {
   
   output$total_mortes <- renderUI({
     
+    regiao_selecionado <- input$select_regiao
+    
+    dados <- dados_covid
+    
+    if (regiao_selecionado != "Todas") {
+      dados <- dados %>% 
+        filter(Country.Region == regiao_selecionado)
+    }
+    
     total_mortes <-
-      dados_covid %>% 
+      dados %>% 
       filter(!is.na(data)) %>%
       group_by(data) %>% 
       summarise(total = sum(mortes)) %>% 
@@ -44,8 +62,17 @@ server <- function(input, output, server) {
   
   output$total_casos_recuperados <- renderUI({
     
+    regiao_selecionado <- input$select_regiao
+    
+    dados <- dados_covid
+    
+    if (regiao_selecionado != "Todas") {
+      dados <- dados %>% 
+        filter(Country.Region == regiao_selecionado)
+    }
+    
     total_recuperados <- 
-      dados_covid %>% 
+      dados %>% 
       filter(!is.na(data)) %>%
       group_by(data) %>% 
       summarise(total = sum(casos_curados)) %>% 
