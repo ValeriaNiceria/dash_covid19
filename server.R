@@ -78,7 +78,7 @@ server <- function(input, output, session) {
     
     tablerStatCard(
       value = total_recuperados$total,
-      title = "Total de casos tratados",
+      title = "Total de recuperados",
       width = 12
     )
     
