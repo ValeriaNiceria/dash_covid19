@@ -8,13 +8,6 @@ ui <- tags$html(
     tags$script(HTML('
          $(document).ready(function() {
            $(".header-brand").attr("href","https://valerianiceria.shinyapps.io/dash_covid19")
-           /* ICONE */
-           $(".fe").addClass("fa").removeClass("fe");
-           $(".fe-chevron-up").addClass("fa-chevron-up").removeClass("fe-chevron-up");
-           $(".fe-database").addClass("fa-database").removeClass("fe-database");
-           $(".fe-maximize").addClass("fa-window-maximize").removeClass("fe-maximize");
-           $(".fe-bar-chart").addClass("fa-bar-chart").removeClass("fe-bar-chart");
-           $(".fe-x").addClass("fa-close").removeClass("fe-x");
         })
     '))
   ),

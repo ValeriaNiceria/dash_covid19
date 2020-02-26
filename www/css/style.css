@@ -44,4 +44,6 @@ label {
   margin-top: -15px;
 }
 
-
+.card-options {
+  display: none;
+}
