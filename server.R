@@ -84,4 +84,50 @@ server <- function(input, output, session) {
     
   })
   
+  
+  output$plot_casos_ao_longo_do_tempo <- renderHighchart({
+    
+    regiao_selecionado <- input$select_regiao
+    
+    dados <- dados_covid
+    
+    if (regiao_selecionado != "Todas") {
+      dados <- dados %>% 
+        filter(Country.Region == regiao_selecionado)
+    }
+    
+    dados_casos <- 
+      dados %>% 
+      group_by(data) %>% 
+      summarise(
+        casos_confirmados = sum(casos_confirmados, na.rm = T),
+        mortes = sum(mortes, na.rm = T),
+        casos_curados = sum(casos_curados, na.rm = T)
+      )
+    
+    highchart() %>% 
+      hc_xAxis(categories = as.character(dados_casos$data)) %>%
+      hc_add_series(
+        dados_casos,
+        name = "Total de casos",
+        type = "line",
+        hcaes(x = as.character(data), y = casos_confirmados)
+      ) %>% 
+      hc_add_series(
+        dados_casos,
+        name = "Total de mortes",
+        type = "line",
+        hcaes(x = as.character(data), y = mortes)
+      ) %>%
+      hc_add_series(
+        dados_casos,
+        name = "Total de casos tratados",
+        type = "line",
+        hcaes(x = as.character(data), y = casos_curados)
+      ) %>%
+      hc_tooltip(pointFormat = paste0("{point.series.name}: <strong>{point.y}</strong>")) %>% 
+      hc_colors(c("#ff9000", "#d60404", "#198c00"))
+    
+  })
+  
 }

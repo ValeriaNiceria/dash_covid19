@@ -5,6 +5,7 @@ library(shiny)
 library(tablerDash)
 library(shinycssloaders)
 library(zoo)
+library(highcharter)
 
 obter_dados <- function() {
   

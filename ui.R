@@ -5,14 +5,16 @@ dados_covid = obter_dados()
 ui <- tags$html(
   tags$head(
     tags$link(rel = "stylesheet", type = "text/css", href = "css/style.css"),
-    tags$link(rel="icon", href="image/favicon.png", type="image/x-icon"),
     tags$script(HTML('
          $(document).ready(function() {
-         $(".header-brand").attr("href","https://valerianiceria.shinyapps.io/dash_covid19")
-         /* ICONE */
-         $(".fe").addClass("fa").removeClass("fe");
-         $(".fe-database").addClass("fa-database").removeClass("fe-database");
-         $(".fe-bar-chart").addClass("fa-bar-chart").removeClass("fe-bar-chart");
+           $(".header-brand").attr("href","https://valerianiceria.shinyapps.io/dash_covid19")
+           /* ICONE */
+           $(".fe").addClass("fa").removeClass("fe");
+           $(".fe-chevron-up").addClass("fa-chevron-up").removeClass("fe-chevron-up");
+           $(".fe-database").addClass("fa-database").removeClass("fe-database");
+           $(".fe-maximize").addClass("fa-window-maximize").removeClass("fe-maximize");
+           $(".fe-bar-chart").addClass("fa-bar-chart").removeClass("fe-bar-chart");
+           $(".fe-x").addClass("fa-close").removeClass("fe-x");
         })
     '))
   ),
@@ -61,6 +63,7 @@ ui <- tags$html(
             ),
             
             fluidRow(
+              id = "row-banner",
               column(
                 width = 3,
                 uiOutput("total_casos_confirmados")
@@ -72,6 +75,17 @@ ui <- tags$html(
               column(
                 width = 3,
                 uiOutput("total_casos_recuperados")
+              )
+            ),
+            
+            fluidRow(
+              column(
+                width = 12,
+                tablerCard(
+                  width = 12,
+                  title = "Coronávirus (COVID-19) ao longo do tempo",
+                  highchartOutput("plot_casos_ao_longo_do_tempo") %>% withSpinner() 
+                )
               )
             )
             
