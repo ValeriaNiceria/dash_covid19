@@ -103,25 +103,40 @@ server <- function(input, output, session) {
         casos_confirmados = sum(casos_confirmados, na.rm = T),
         mortes = sum(mortes, na.rm = T),
         casos_curados = sum(casos_curados, na.rm = T)
+      ) %>% 
+      mutate(
+        casos_confirmados1 = c(0, head(casos_confirmados, -1)),
+        mortes1 = c(0, head(mortes, -1)),
+        casos_curados1 = c(0, head(casos_curados, -1))
       )
+    
+    if (input$tipo_plot_tempo == "Real") {
+      dados_casos <- 
+        dados_casos %>% 
+        mutate(
+          casos_confirmados = casos_confirmados - casos_confirmados1,
+          mortes = mortes - mortes1,
+          casos_curados = casos_curados - casos_curados1
+        )
+    }
     
     highchart() %>% 
       hc_xAxis(categories = as.character(dados_casos$data)) %>%
       hc_add_series(
         dados_casos,
-        name = "Total de casos",
+        name = "Casos",
         type = "line",
         hcaes(x = as.character(data), y = casos_confirmados)
       ) %>% 
       hc_add_series(
         dados_casos,
-        name = "Total de mortes",
+        name = "Mortes",
         type = "line",
         hcaes(x = as.character(data), y = mortes)
       ) %>%
       hc_add_series(
         dados_casos,
-        name = "Total de casos tratados",
+        name = "Recuperados",
         type = "line",
         hcaes(x = as.character(data), y = casos_curados)
       ) %>%

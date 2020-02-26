@@ -58,15 +58,15 @@ ui <- tags$html(
             fluidRow(
               id = "row-banner",
               column(
-                width = 3,
+                width = 4,
                 uiOutput("total_casos_confirmados")
               ),
               column(
-                width = 3,
+                width = 4,
                 uiOutput("total_mortes")
               ),
               column(
-                width = 3,
+                width = 4,
                 uiOutput("total_casos_recuperados")
               )
             ),
@@ -77,6 +77,12 @@ ui <- tags$html(
                 tablerCard(
                   width = 12,
                   title = "Coronávirus (COVID-19) ao longo do tempo",
+                  radioButtons(
+                    "tipo_plot_tempo",
+                    "Tipo",
+                    choices = c("Acumulado", "Real"),
+                    inline = T
+                  ),
                   highchartOutput("plot_casos_ao_longo_do_tempo") %>% withSpinner() 
                 )
               )
