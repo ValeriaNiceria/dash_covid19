@@ -104,7 +104,7 @@ ui <- tags$html(
                   ),
                   column(
                     width = 3,
-                    uiOutput("tabela_regiao") %>% withSpinner() 
+                    uiOutput("tabela_regiao")
                   ),
                   
                   column(
