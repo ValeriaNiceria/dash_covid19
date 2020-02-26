@@ -86,6 +86,34 @@ ui <- tags$html(
                   highchartOutput("plot_casos_ao_longo_do_tempo") %>% withSpinner() 
                 )
               )
+            ),
+            
+            fluidRow(
+              column(
+                width = 12,
+                tablerCard(
+                  width = 12,
+                  title = "Regiões",
+                  radioButtons(
+                    "tipo_regiao",
+                    "Tipo",
+                    choices = c("Casos confirmados" = "confirmado",
+                                "Mortes" = "morte",
+                                "Casos recuperados" = "recuperado"),
+                    inline = T
+                  ),
+                  column(
+                    width = 3,
+                    uiOutput("tabela_regiao") %>% withSpinner() 
+                  ),
+                  
+                  column(
+                    width = 9,
+                    leafletOutput('plot_mapa_regiao', height = "400px") %>% withSpinner()
+                  )
+                )
+              )
+  
             )
             
           )

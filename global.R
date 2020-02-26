@@ -6,6 +6,9 @@ library(tablerDash)
 library(shinycssloaders)
 library(zoo)
 library(highcharter)
+library(knitr)
+library(kableExtra)
+library(leaflet)
 
 obter_dados <- function() {
   

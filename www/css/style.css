@@ -86,3 +86,40 @@ label[for="tipo_plot_tempo"]
 {
   display: none;
 }
+
+/*
+*
+*/
+
+#tipo_regiao {
+  margin-top: -65px;
+  float: right;
+}
+
+#tipo_regiao .shiny-options-group .radio-inline input[type="radio"] {
+  opacity: 0;
+  position: fixed;
+  width: 0;
+}
+
+#tipo_regiao .shiny-options-group .radio-inline span {
+  display: inline-block;
+  background-color: #ddd;
+  padding: 5px 3px;
+  font-family: sans-serif, Arial;
+  font-size: 11px;
+  border: 2px solid #444;
+  border-radius: 4px;
+}
+
+
+#tipo_regiao .shiny-options-group .radio-inline input[type="radio"]:checked + span {
+  background-color:#d6a9b6;
+  border-color: #bc323c;
+  font-weight: bold;
+}
+
+label[for="tipo_regiao"]
+{
+  display: none;
+}

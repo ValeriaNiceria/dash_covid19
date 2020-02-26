@@ -145,4 +145,112 @@ server <- function(input, output, session) {
     
   })
   
+  
+  output$tabela_regiao <- renderUI({
+    
+    ultimo_dia <- obter_ultima_data(dados = dados_covid)
+    
+    if (input$tipo_regiao == "confirmado") {
+      
+      dados_regiao <-
+        dados_covid %>% 
+        filter(
+          as.character(data) == ultimo_dia
+        ) %>% 
+        group_by(Country.Region) %>% 
+        summarise(Total = sum(casos_confirmados, na.rm = T)) %>% 
+        arrange(desc(Total))
+      
+    } else if (input$tipo_regiao == "morte") {
+      
+      dados_regiao <-
+        dados_covid %>% 
+        filter(
+          as.character(data) == ultimo_dia
+        ) %>% 
+        group_by(Country.Region) %>% 
+        summarise(Total = sum(mortes, na.rm = T)) %>% 
+        arrange(desc(Total))
+      
+    } else {
+      
+      dados_regiao <-
+        dados_covid %>% 
+        filter(
+          as.character(data) == ultimo_dia
+        ) %>% 
+        group_by(Country.Region) %>% 
+        summarise(Total = sum(casos_curados, na.rm = T)) %>% 
+        arrange(desc(Total))
+      
+    }
+    
+    colnames(dados_regiao)[1] <- "Região"
+    
+    tabela <-
+    kable(dados_regiao, align = "c", row.names = FALSE, digits = 3) %>% 
+      kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"), font_size = 12, full_width = T) %>% 
+      scroll_box( height = "350px") 
+    
+    HTML(tabela)
+    
+  })
+
+  
+  
+  output$plot_mapa_regiao <- renderLeaflet({
+    
+    ultimo_dia <- obter_ultima_data(dados = dados_covid)
+    
+    if (input$tipo_regiao == "confirmado") {
+      
+      dados_regiao <-
+        dados_covid %>% 
+        filter(
+          as.character(data) == ultimo_dia,
+          casos_confirmados > 0
+        ) %>% rename(lat = Lat, long = Long)
+      
+      color_bubble <- "#ff9000"
+      
+    } else if (input$tipo_regiao == "morte") {
+      
+      dados_regiao <-
+        dados_covid %>% 
+        filter(
+          as.character(data) == ultimo_dia,
+          mortes > 0
+        ) %>% rename(lat = Lat, long = Long)
+      
+      color_bubble <- "#d60404"
+      
+    } else {
+      
+      dados_regiao <-
+        dados_covid %>% 
+        filter(
+          as.character(data) == ultimo_dia,
+          casos_curados > 0
+        ) %>% rename(lat = Lat, long = Long)
+      
+      color_bubble <- "#198c00"
+      
+    }
+    
+    leaflet(dados_regiao) %>% 
+      addTiles()  %>% 
+      addProviderTiles("Esri.WorldImagery") %>%
+      addCircleMarkers(~long, ~lat, 
+                       fillColor = color_bubble,
+                       fillOpacity = 0.7,
+                       color="white",
+                       radius=8, stroke=FALSE,
+                       # label = mytext,
+                       labelOptions = 
+                         labelOptions( style = list("font-weight" = "normal", padding = "3px 8px"),
+                                       textsize = "13px", direction = "auto")
+      )
+    
+  })
+  
 }
