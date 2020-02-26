@@ -123,3 +123,9 @@ label[for="tipo_regiao"]
 {
   display: none;
 }
+
+
+footer {
+  background: white;
+  padding: 10px;
+}

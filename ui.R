@@ -93,7 +93,7 @@ ui <- tags$html(
                 width = 12,
                 tablerCard(
                   width = 12,
-                  title = "Regiões",
+                  title = "Top regiões e distribuição no mundo",
                   radioButtons(
                     "tipo_regiao",
                     "Tipo",
@@ -119,10 +119,34 @@ ui <- tags$html(
           )
           
         )
-      ),
-      
-      footer = tablerDashFooter()
-      
+      )
+    ),
+    shiny::tags$footer(
+      shiny::tags$div(
+        class="container",
+        shiny::tags$div(
+          class="row align-items-center flex-row-reverse",
+          shiny::tags$div(
+            class="col-auto ml-lg-auto",
+            shiny::tags$div(
+              class="row align-items-center",
+              shiny::tags$div(
+                class="col-auto",
+                shiny::tags$a(
+                  href="https://github.com/ValeriaNiceria/dash_covid19",
+                  class="btn btn-outline-primary btn-sm",
+                  "Código",
+                  target="_blank"
+                )
+              )
+            )
+          ),
+          shiny::tags$div(
+            class="col-12 col-lg-auto mt-3 mt-lg-0 text-center",
+            "Copyright © 2020 - produzido por Valéria Nicéria"
+          )
+        )
+      )
     )
   )
 )

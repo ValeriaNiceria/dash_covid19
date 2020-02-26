@@ -213,6 +213,13 @@ server <- function(input, output, session) {
       
       color_bubble <- "#ff9000"
       
+      mytext <- paste0(
+        "<b>País ou região:</b> ", dados_regiao$Country.Region, "<br/>",
+        "<b>Província ou estado:</b> ", ifelse(dados_regiao$Province.State == "", "Sem informação", as.character(dados_regiao$Province.State)), "<br/>", 
+        "<b>Total de casos confirmados:</b> ", dados_regiao$casos_confirmados, "<br/>"
+        ) %>%
+        lapply(htmltools::HTML)
+      
     } else if (input$tipo_regiao == "morte") {
       
       dados_regiao <-
@@ -223,6 +230,13 @@ server <- function(input, output, session) {
         ) %>% rename(lat = Lat, long = Long)
       
       color_bubble <- "#d60404"
+      
+      mytext <- paste0(
+        "<b>País ou região:</b> ", dados_regiao$Country.Region, "<br/>",
+        "<b>Província ou estado:</b> ", ifelse(dados_regiao$Province.State == "", "Sem informação", as.character(dados_regiao$Province.State)), "<br/>", 
+        "<b>Total de mortes:</b> ", dados_regiao$mortes, "<br/>"
+      ) %>%
+        lapply(htmltools::HTML)
       
     } else {
       
@@ -235,6 +249,13 @@ server <- function(input, output, session) {
       
       color_bubble <- "#198c00"
       
+      mytext <- paste0(
+        "<b>País ou região:</b> ", dados_regiao$Country.Region, "<br/>",
+        "<b>Província ou estado:</b> ", ifelse(dados_regiao$Province.State == "", "Sem informação", as.character(dados_regiao$Province.State)), "<br/>", 
+        "<b>Total de recuperados:</b> ", dados_regiao$casos_curados, "<br/>"
+      ) %>%
+        lapply(htmltools::HTML)
+      
     }
     
     leaflet(dados_regiao) %>% 
@@ -245,7 +266,7 @@ server <- function(input, output, session) {
                        fillOpacity = 0.7,
                        color="white",
                        radius=8, stroke=FALSE,
-                       # label = mytext,
+                       label = mytext,
                        labelOptions = 
                          labelOptions( style = list("font-weight" = "normal", padding = "3px 8px"),
                                        textsize = "13px", direction = "auto")
