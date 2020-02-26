@@ -76,7 +76,7 @@ ui <- tags$html(
                 width = 12,
                 tablerCard(
                   width = 12,
-                  title = "Coronávirus (COVID-19) ao longo do tempo",
+                  title = "Coronavírus (COVID-19) ao longo do tempo",
                   radioButtons(
                     "tipo_plot_tempo",
                     "Tipo",
