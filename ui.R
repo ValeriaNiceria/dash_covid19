@@ -136,14 +136,15 @@ ui <- tags$html(
                   href="https://github.com/ValeriaNiceria/dash_covid19",
                   class="btn btn-outline-primary btn-sm",
                   "Código",
-                  target="_blank"
+                  target="_blank",
+                  alt = "valeria niceria"
                 )
               )
             )
           ),
           shiny::tags$div(
             class="col-12 col-lg-auto mt-3 mt-lg-0 text-center",
-            "Copyright © 2020 - produzido por Valéria Nicéria"
+            "Copyright © 2020 - desenvolvido por Valéria Nicéria"
           )
         )
       )
