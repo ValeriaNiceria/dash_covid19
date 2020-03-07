@@ -80,7 +80,7 @@ ui <- tags$html(
                   radioButtons(
                     "tipo_plot_tempo",
                     "Tipo",
-                    choices = c("Acumulado", "Real"),
+                    choices = c("Acumulado", "Novos"),
                     inline = T
                   ),
                   highchartOutput("plot_casos_ao_longo_do_tempo") %>% withSpinner() 

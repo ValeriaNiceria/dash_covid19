@@ -119,7 +119,7 @@ server <- function(input, output, session) {
         casos_curados1 = c(0, head(casos_curados, -1))
       )
     
-    if (input$tipo_plot_tempo == "Real") {
+    if (input$tipo_plot_tempo == "Novos") {
       dados_casos <- 
         dados_casos %>% 
         mutate(
