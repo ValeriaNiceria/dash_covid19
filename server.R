@@ -195,13 +195,16 @@ server <- function(input, output, session) {
     }
     
     dados_regiao <- dados_regiao %>% 
-      mutate(`%` = round((Total/sum(Total))*100, 1))
+      mutate(
+        `%` = round((Total/sum(Total))*100, 1)
+      )
     
     colnames(dados_regiao)[1] <- "Região"
     
     tabela <-
     kable(dados_regiao, align = "c", row.names = FALSE, digits = 3) %>% 
       kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"), font_size = 12, full_width = T) %>% 
+      column_spec(3, bold = TRUE, include_thead =TRUE) %>% 
       scroll_box( height = "350px") 
     
     HTML(tabela)
