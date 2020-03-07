@@ -22,8 +22,11 @@ server <- function(input, output, session) {
       dplyr::select(total) %>% 
       tail(1)
     
+    total_formatado <- 
+      format(as.numeric(total_casos$total), big.mark=".")
+    
     tablerStatCard(
-      value = total_casos$total,
+      value = total_formatado,
       title = "Total de casos",
       width = 12
     )
@@ -49,8 +52,11 @@ server <- function(input, output, session) {
       dplyr::select(total) %>% 
       tail(1)
     
+    total_formatado <- 
+      format(as.numeric(total_mortes$total), big.mark=".")
+    
     tablerStatCard(
-      value = total_mortes$total,
+      value = total_formatado,
       title = "Total de mortes",
       width = 12
     )
@@ -76,8 +82,11 @@ server <- function(input, output, session) {
       dplyr::select(total) %>% 
       tail(1)
     
+    total_formatado <- 
+      format(as.numeric(total_recuperados$total), big.mark=".")
+    
     tablerStatCard(
-      value = total_recuperados$total,
+      value = total_formatado,
       title = "Total de recuperados",
       width = 12
     )
@@ -184,6 +193,9 @@ server <- function(input, output, session) {
         arrange(desc(Total))
       
     }
+    
+    dados_regiao <- dados_regiao %>% 
+      mutate(`%` = round((Total/sum(Total))*100, 1))
     
     colnames(dados_regiao)[1] <- "Região"
     

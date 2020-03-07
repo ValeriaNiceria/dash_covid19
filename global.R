@@ -84,3 +84,15 @@ obter_ultima_data <- function(dados) {
     unique() %>%
     last()
 }
+
+formatar_data <- function(data) {
+  data_split <- strsplit(as.character(data), "-")
+  data_split <- data_split[[1]]
+  ano <- data_split[1]
+  mes <- data_split[2]
+  dia <- data_split[3]
+  
+  data_join <- paste(dia, mes, ano, sep = "/")
+  
+  return(data_join)
+}

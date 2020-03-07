@@ -47,9 +47,9 @@ ui <- tags$html(
                 width = 12,
                 span(
                   id="span-data",
-                  paste(
-                    "* Dados do dia:",
-                    obter_ultima_data(dados = dados_covid)
+                    "* Última atualização:",
+                  tags$strong(
+                    obter_ultima_data(dados = dados_covid) %>% formatar_data(.)
                   )
                 )
               )
