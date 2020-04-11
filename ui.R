@@ -1,7 +1,5 @@
 source("./global.R", encoding = "utf-8")
 
-dados_covid = obter_dados()
-
 ui <- tags$html(
   tags$head(
     tags$link(rel = "stylesheet", type = "text/css", href = "css/style.css"),
@@ -18,106 +16,21 @@ ui <- tags$html(
       navbar = tablerDashNav(
         id = "menuCovid",
         src = "img/logo.png",
-        selectInput(
-          "select_regiao",
-          "Selecione uma região:",
-          choices = c("Todas", 
-                      as.character(
-                        dados_covid %>%
-                          arrange(Country.Region) %>%
-                          pull(Country.Region)
-                        )
-                      )
+        radioButtons(
+          "input_nivel_visualizacao",
+          "Nível",
+          choices = c("Global", "Brasil"),
+          inline = T
         )
       ),
 
       title = "COVID-19",
-      
       body = tablerDashBody(
-        
         tablerTabItems(
-          
           tablerTabItem(
-            
             tabName = "home",
-
-            fluidRow(
-              id="row-data",
-              column(
-                width = 12,
-                span(
-                  id="span-data",
-                    "* Última atualização:",
-                  tags$strong(
-                    obter_ultima_data(dados = dados_covid) %>% formatar_data(.)
-                  )
-                )
-              )
-            ),
-            
-            fluidRow(
-              id = "row-banner",
-              column(
-                width = 4,
-                uiOutput("total_casos_confirmados")
-              ),
-              column(
-                width = 4,
-                uiOutput("total_mortes")
-              ),
-              column(
-                width = 4,
-                uiOutput("total_casos_recuperados")
-              )
-            ),
-            
-            fluidRow(
-              column(
-                width = 12,
-                tablerCard(
-                  width = 12,
-                  title = "Coronavírus (COVID-19) ao longo do tempo",
-                  radioButtons(
-                    "tipo_plot_tempo",
-                    "Tipo",
-                    choices = c("Acumulado", "Novos"),
-                    inline = T
-                  ),
-                  highchartOutput("plot_casos_ao_longo_do_tempo") %>% withSpinner() 
-                )
-              )
-            ),
-            
-            fluidRow(
-              column(
-                width = 12,
-                tablerCard(
-                  width = 12,
-                  title = "Top regiões e distribuição no mundo",
-                  radioButtons(
-                    "tipo_regiao",
-                    "Tipo",
-                    choices = c("Casos confirmados" = "confirmado",
-                                "Mortes" = "morte",
-                                "Casos recuperados" = "recuperado"),
-                    inline = T
-                  ),
-                  column(
-                    width = 3,
-                    uiOutput("tabela_regiao")
-                  ),
-                  
-                  column(
-                    width = 9,
-                    leafletOutput('plot_mapa_regiao', height = "400px") %>% withSpinner()
-                  )
-                )
-              )
-  
-            )
-            
+            uiOutput("ui_body") %>% loading()
           )
-          
         )
       )
     ),

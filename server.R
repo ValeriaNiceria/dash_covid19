@@ -1,29 +1,188 @@
 source("./global.R", encoding = "utf-8")
 
-dados_covid = obter_dados()
-
 server <- function(input, output, session) {
-
-  output$total_casos_confirmados <- renderUI({
+  
+  dados_covid <- reactive({
     
-    regiao_selecionado <- input$select_regiao
+    input_nivel <- input$input_nivel_visualizacao
     
-    dados <- dados_covid
-
-    if (regiao_selecionado != "Todas") {
-      dados <- dados %>% 
-        filter(Country.Region == regiao_selecionado)
+    if (input_nivel == "Global") {
+      dados <- readRDS("dados/dados_mundo.rds")
+    } else {
+      dados <- readRDS("dados/dados_brasil.rds")
     }
     
-    total_casos <- 
-      dados %>% 
-      group_by(data) %>% 
-      summarise(total = sum(casos_confirmados)) %>% 
-      dplyr::select(total) %>% 
-      tail(1)
     
-    total_formatado <- 
-      format(as.numeric(total_casos$total), big.mark=".")
+    dados
+  })
+  
+  
+  dados_periodo <- reactive({
+    
+    dados <- dados_covid()
+    
+    input_nivel_tempo <- input$tipo_plot_tempo
+    penultimo_dia <- obter_penultimo_dia(dados = dados)
+    ultimo_dia <- obter_ultima_data(dados = dados)
+    
+    
+    if (input_nivel_tempo == "Novos") {
+      dados <- dados %>% 
+        filter(date %in% c(penultimo_dia, ultimo_dia)) %>% 
+        group_by(Province.State, Country.Region, Lat,  Long) %>% 
+        summarise(
+          casos_confirmados = diff(casos_confirmados, na.rm = T),
+          mortes = diff(mortes, na.rm = T),
+          casos_curados = diff(casos_curados, na.rm = T)
+        ) %>% 
+        rename(lat = Lat, long = Long)
+    } else {
+      dados <- dados %>% 
+        filter(date == ultimo_dia) %>% 
+        rename(lat = Lat, long = Long)
+    }
+    
+  })
+  
+  
+  output$ui_body <- renderUI({
+    
+    input_nivel <- input$input_nivel_visualizacao
+    
+    if (input_nivel == "Global") {
+      
+      tagList(
+        fluidRow(
+          id="row-data",
+          column(width = 7),
+          column(
+            width = 3,
+            radioButtons(
+              "tipo_plot_tempo",
+              "Tipo",
+              choices = c("Novos", "Acumulado"),
+              inline = T
+            )
+          ),
+          column(
+            width = 2,
+            span(
+              id="span-data",
+              "* Última atualização:",
+              tags$strong(
+                obter_ultima_data(dados = dados_covid()) %>% formatar_data(.)
+              )
+            )
+          )
+        ),
+        uiOutput("ui_global") %>% loading()
+      )
+      
+    } else {
+      
+      tagList(
+        fluidRow(
+          id="row-data",
+          column(
+            width = 4,
+            span(
+              id="span-data",
+              "* Última atualização:",
+              tags$strong(
+                obter_ultima_data(dados = dados_covid()) %>% formatar_data(.)
+              )
+            )
+          )
+        ),
+        uiOutput("ui_brasil") %>% loading()
+      )
+    }
+    
+  })
+  
+  
+  output$ui_global <- renderUI({
+    
+    tagList(
+      fluidRow(
+        id = "row-banner",
+        column(
+          width = 4,
+          uiOutput("total_casos_confirmados_global") %>% loading()
+        ),
+        column(
+          width = 4,
+          uiOutput("total_mortes_global") %>% loading()
+        ),
+        column(
+          width = 4,
+          uiOutput("total_casos_recuperados_global") %>% loading()
+        )
+      ),
+      
+      fluidRow(
+        tablerCard(
+          width = 12,
+          title = "Top regiões - Distribuição no mundo",
+          radioButtons(
+            "input_tipo",
+            "Tipo",
+            choices = c("Casos confirmados" = "confirmado",
+                        "Mortes" = "morte",
+                        "Casos recuperados" = "recuperado"),
+            inline = T
+          ),
+          fluidRow(
+            column(
+              width = 3,
+              uiOutput("tabela_regiao_global") %>% loading()
+            ),
+            
+            column(
+              width = 9,
+              leafletOutput('plot_mapa_regiao_global', height = "400px") %>% loading()
+            )
+          )
+        )
+      ),
+      
+      fluidRow(
+        column(width = 9),
+        column(
+          width = 3,
+          selectInput(
+            "input_select_regiao",
+            "Região:",
+            choices = c("Geral" = "geral", dados_periodo() %>% 
+                          filter(!is.na(Country.Region)) %>% 
+                          ungroup() %>% 
+                          mutate(Country.Region = as.character(Country.Region)) %>%
+                          pull(Country.Region) %>% unique())
+          )
+        )
+      ),
+      
+      fluidRow(
+        tablerCard(
+          width = 12,
+          title = "Coronavírus (COVID-19) ao longo do tempo",
+          highchartOutput("plot_casos_ao_longo_do_tempo_global") %>% loading()
+        )
+      )
+    )
+    
+  })
+  
+  
+  output$ui_brasil <- renderUI({})
+  
+
+  output$total_casos_confirmados_global <- renderUI({
+    
+    dados <- dados_periodo()
+    
+    total_casos <- dados %>% pull(casos_confirmados) %>% sum(., na.rm = T)
+    total_formatado <- format(as.numeric(total_casos), big.mark=".")
     
     tablerStatCard(
       value = total_formatado,
@@ -34,26 +193,12 @@ server <- function(input, output, session) {
   })
   
   
-  output$total_mortes <- renderUI({
+  output$total_mortes_global <- renderUI({
     
-    regiao_selecionado <- input$select_regiao
+    dados <- dados_periodo()
     
-    dados <- dados_covid
-    
-    if (regiao_selecionado != "Todas") {
-      dados <- dados %>% 
-        filter(Country.Region == regiao_selecionado)
-    }
-    
-    total_mortes <-
-      dados %>% 
-      group_by(data) %>% 
-      summarise(total = sum(mortes)) %>% 
-      dplyr::select(total) %>% 
-      tail(1)
-    
-    total_formatado <- 
-      format(as.numeric(total_mortes$total), big.mark=".")
+    total_mortes <- dados %>% pull(mortes) %>% sum(., na.rm = T)
+    total_formatado <- format(as.numeric(total_mortes), big.mark=".")
     
     tablerStatCard(
       value = total_formatado,
@@ -64,26 +209,12 @@ server <- function(input, output, session) {
   })
   
   
-  output$total_casos_recuperados <- renderUI({
+  output$total_casos_recuperados_global <- renderUI({
     
-    regiao_selecionado <- input$select_regiao
+    dados <- dados_periodo()
     
-    dados <- dados_covid
-    
-    if (regiao_selecionado != "Todas") {
-      dados <- dados %>% 
-        filter(Country.Region == regiao_selecionado)
-    }
-    
-    total_recuperados <- 
-      dados %>%
-      group_by(data) %>% 
-      summarise(total = sum(casos_curados)) %>% 
-      dplyr::select(total) %>% 
-      tail(1)
-    
-    total_formatado <- 
-      format(as.numeric(total_recuperados$total), big.mark=".")
+    total_curados <- dados %>% pull(casos_curados) %>% sum(., na.rm = T)
+    total_formatado <- format(as.numeric(total_curados), big.mark=".")
     
     tablerStatCard(
       value = total_formatado,
@@ -94,104 +225,30 @@ server <- function(input, output, session) {
   })
   
   
-  output$plot_casos_ao_longo_do_tempo <- renderHighchart({
+  output$tabela_regiao_global <- renderUI({
     
-    regiao_selecionado <- input$select_regiao
+    dados <- dados_periodo()
     
-    dados <- dados_covid
+    input_tipo <- input$input_tipo
     
-    if (regiao_selecionado != "Todas") {
-      dados <- dados %>% 
-        filter(Country.Region == regiao_selecionado)
-    }
-    
-    dados_casos <- 
-      dados %>% 
-      group_by(data) %>% 
-      summarise(
-        casos_confirmados = sum(casos_confirmados, na.rm = T),
-        mortes = sum(mortes, na.rm = T),
-        casos_curados = sum(casos_curados, na.rm = T)
-      ) %>% 
-      mutate(
-        casos_confirmados1 = c(0, head(casos_confirmados, -1)),
-        mortes1 = c(0, head(mortes, -1)),
-        casos_curados1 = c(0, head(casos_curados, -1))
-      )
-    
-    if (input$tipo_plot_tempo == "Novos") {
-      dados_casos <- 
-        dados_casos %>% 
-        mutate(
-          casos_confirmados = casos_confirmados - casos_confirmados1,
-          mortes = mortes - mortes1,
-          casos_curados = casos_curados - casos_curados1
-        )
-    }
-    
-    highchart() %>% 
-      hc_xAxis(categories = as.character(dados_casos$data)) %>%
-      hc_add_series(
-        dados_casos,
-        name = "Casos",
-        type = "line",
-        hcaes(x = as.character(data), y = casos_confirmados)
-      ) %>% 
-      hc_add_series(
-        dados_casos,
-        name = "Mortes",
-        type = "line",
-        hcaes(x = as.character(data), y = mortes)
-      ) %>%
-      hc_add_series(
-        dados_casos,
-        name = "Recuperados",
-        type = "line",
-        hcaes(x = as.character(data), y = casos_curados)
-      ) %>%
-      hc_tooltip(pointFormat = paste0("{point.series.name}: <strong>{point.y}</strong>")) %>% 
-      hc_colors(c("#ff9000", "#d60404", "#198c00"))
-    
-  })
-  
-  
-  output$tabela_regiao <- renderUI({
-    
-    ultimo_dia <- obter_ultima_data(dados = dados_covid)
-    
-    if (input$tipo_regiao == "confirmado") {
-      
+    if (input_tipo == "confirmado") {
       dados_regiao <-
-        dados_covid %>% 
-        filter(
-          as.character(data) == ultimo_dia
-        ) %>% 
+        dados %>% 
         group_by(Country.Region) %>% 
         summarise(Total = sum(casos_confirmados, na.rm = T)) %>% 
         arrange(desc(Total))
-      
-    } else if (input$tipo_regiao == "morte") {
-      
+    } else if (input_tipo == "morte") {
       dados_regiao <-
-        dados_covid %>% 
-        filter(
-          as.character(data) == ultimo_dia
-        ) %>% 
+        dados %>%  
         group_by(Country.Region) %>% 
         summarise(Total = sum(mortes, na.rm = T)) %>% 
         arrange(desc(Total))
-      
     } else {
-      
       dados_regiao <-
-        dados_covid %>% 
-        filter(
-          as.character(data) == ultimo_dia
-        ) %>% 
+        dados %>% 
         group_by(Country.Region) %>% 
         summarise(Total = sum(casos_curados, na.rm = T)) %>% 
         arrange(desc(Total))
-      
     }
     
     dados_regiao <- dados_regiao %>% 
@@ -205,7 +262,7 @@ server <- function(input, output, session) {
     kable(dados_regiao, align = "c", row.names = FALSE, digits = 3) %>% 
       kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"), font_size = 12, full_width = T) %>% 
       column_spec(3, bold = TRUE, include_thead =TRUE) %>% 
-      scroll_box( height = "350px") 
+      scroll_box( height = "399px") 
     
     HTML(tabela)
     
@@ -213,18 +270,17 @@ server <- function(input, output, session) {
 
   
   
-  output$plot_mapa_regiao <- renderLeaflet({
+  output$plot_mapa_regiao_global <- renderLeaflet({
     
-    ultimo_dia <- obter_ultima_data(dados = dados_covid)
+    dados <- dados_periodo()
     
-    if (input$tipo_regiao == "confirmado") {
+    input_tipo <- input$input_tipo
+    
+    if (input_tipo == "confirmado") {
       
       dados_regiao <-
-        dados_covid %>% 
-        filter(
-          as.character(data) == ultimo_dia,
-          casos_confirmados > 0
-        ) %>% rename(lat = Lat, long = Long)
+        dados %>% 
+        filter(casos_confirmados > 0)
       
       color_bubble <- "#ff9000"
       
@@ -235,14 +291,11 @@ server <- function(input, output, session) {
         ) %>%
         lapply(htmltools::HTML)
       
-    } else if (input$tipo_regiao == "morte") {
+    } else if (input_tipo == "morte") {
       
       dados_regiao <-
-        dados_covid %>% 
-        filter(
-          as.character(data) == ultimo_dia,
-          mortes > 0
-        ) %>% rename(lat = Lat, long = Long)
+        dados %>% 
+        filter(mortes > 0)
       
       color_bubble <- "#d60404"
       
@@ -256,11 +309,8 @@ server <- function(input, output, session) {
     } else {
       
       dados_regiao <-
-        dados_covid %>% 
-        filter(
-          as.character(data) == ultimo_dia,
-          casos_curados > 0
-        ) %>% rename(lat = Lat, long = Long)
+        dados %>% 
+        filter(casos_curados > 0)
       
       color_bubble <- "#198c00"
       
@@ -286,6 +336,73 @@ server <- function(input, output, session) {
                          labelOptions( style = list("font-weight" = "normal", padding = "3px 8px"),
                                        textsize = "13px", direction = "auto")
       )
+    
+  })
+  
+  
+  output$plot_casos_ao_longo_do_tempo_global <- renderHighchart({
+    
+    dados <- dados_covid()
+    
+    input_nivel_tempo <- input$tipo_plot_tempo
+    input_geral_regiao <- input$input_geral_regiao
+    input_select_regiao <- input$input_select_regiao
+    
+    
+    if (input_select_regiao != "geral") {
+      
+      dados <- dados %>% 
+        filter(Country.Region == input_select_regiao)
+    }
+      
+    dados <- 
+      dados %>% 
+      group_by(date) %>% 
+      summarise(
+        casos_confirmados = sum(casos_confirmados, na.rm = T),
+        mortes = sum(mortes, na.rm = T),
+        casos_curados = sum(casos_curados, na.rm = T)
+      ) %>% 
+      mutate(
+        casos_confirmados1 = c(0, head(casos_confirmados, -1)),
+        mortes1 = c(0, head(mortes, -1)),
+        casos_curados1 = c(0, head(casos_curados, -1))
+      )
+      
+    if (input_nivel_tempo == "Novos") {
+      dados <- 
+        dados %>% 
+        mutate(
+          casos_confirmados = casos_confirmados - casos_confirmados1,
+          mortes = mortes - mortes1,
+          casos_curados = casos_curados - casos_curados1
+        )
+    }
+      
+      
+    highchart() %>%
+      hc_xAxis(categories = as.character(dados$date)) %>%
+      hc_add_series(
+        dados,
+        name = "Casos",
+        type = "line",
+        hcaes(x = as.character(date), y = casos_confirmados)
+      ) %>%
+      hc_add_series(
+        dados,
+        name = "Mortes",
+        type = "line",
+        hcaes(x = as.character(date), y = mortes)
+      ) %>%
+      hc_add_series(
+        dados,
+        name = "Recuperados",
+        type = "line",
+        hcaes(x = as.character(date), y = casos_curados)
+      ) %>%
+      hc_tooltip(pointFormat = paste0("{point.series.name}: <strong>{point.y}</strong>")) %>%
+      hc_colors(c("#ff9000", "#d60404", "#198c00"))
+      
     
   })
   
