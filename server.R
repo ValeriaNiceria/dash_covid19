@@ -83,8 +83,18 @@ server <- function(input, output, session) {
       tagList(
         fluidRow(
           id="row-data",
+          column(width = 7),
           column(
-            width = 4,
+            width = 3,
+            radioButtons(
+              "tipo_plot_tempo_brasil",
+              "Tipo",
+              choices = c("Novos", "Acumulado"),
+              inline = T
+            )
+          ),
+          column(
+            width = 2,
             span(
               id="span-data",
               "* Última atualização:",
@@ -147,25 +157,25 @@ server <- function(input, output, session) {
       ),
       
       fluidRow(
-        column(width = 9),
-        column(
-          width = 3,
-          selectInput(
-            "input_select_regiao",
-            "Região:",
-            choices = c("Geral" = "geral", dados_periodo() %>% 
-                          filter(!is.na(Country.Region)) %>% 
-                          ungroup() %>% 
-                          mutate(Country.Region = as.character(Country.Region)) %>%
-                          pull(Country.Region) %>% unique())
-          )
-        )
-      ),
-      
-      fluidRow(
         tablerCard(
           width = 12,
           title = "Coronavírus (COVID-19) ao longo do tempo",
+          fluidRow(
+            style = "margin-top: -66px;",
+            column(width = 9),
+            column(
+              width = 3,
+              selectInput(
+                "input_select_regiao",
+                "Região:",
+                choices = c("Geral" = "geral", dados_periodo() %>% 
+                              filter(!is.na(Country.Region)) %>% 
+                              ungroup() %>% 
+                              mutate(Country.Region = as.character(Country.Region)) %>%
+                              pull(Country.Region) %>% unique())
+              )
+            )
+          ),
           highchartOutput("plot_casos_ao_longo_do_tempo_global") %>% loading()
         )
       )
@@ -174,8 +184,32 @@ server <- function(input, output, session) {
   })
   
   
-  output$ui_brasil <- renderUI({})
+  output$ui_brasil <- renderUI({
+    
+    # tagList(
+    #   
+    #   fluidRow(
+    #     id = "row-banner",
+    #     column(
+    #       width = 4,
+    #       uiOutput("total_casos_confirmados_brasil") %>% loading()
+    #     ),
+    #     column(
+    #       width = 4,
+    #       uiOutput("total_mortes_brasil") %>% loading()
+    #     ),
+    #     column(
+    #       width = 4,
+    #       uiOutput("total_casos_recuperados_brasil") %>% loading()
+    #     )
+    #   )
+    #   
+    # )
+    
+  })
   
+  
+  # Begin - Global ----
 
   output$total_casos_confirmados_global <- renderUI({
     
@@ -345,7 +379,6 @@ server <- function(input, output, session) {
     dados <- dados_covid()
     
     input_nivel_tempo <- input$tipo_plot_tempo
-    input_geral_regiao <- input$input_geral_regiao
     input_select_regiao <- input$input_select_regiao
     
     
@@ -402,8 +435,67 @@ server <- function(input, output, session) {
       ) %>%
       hc_tooltip(pointFormat = paste0("{point.series.name}: <strong>{point.y}</strong>")) %>%
       hc_colors(c("#ff9000", "#d60404", "#198c00"))
-      
+  })
+  
+  
+  # Begin - Brasil ----
+  
+  
+  output$total_casos_confirmados_brasil <- renderUI({
+    
+    dados <- dados_covid()
+    
+    input_nivel_tempo <- input$tipo_plot_tempo_brasil
+    ultimo_dia <- obter_ultima_data(dados)
+    
+    if (input_nivel_tempo == "Novos") {
+      dados <- dados %>% 
+        filter(date == ultimo_dia)
+    }
+    
+    dados <- dados %>% pull(confirmed) %>% sum(., na.rm = T)
+    
+    total_formatado <- format(as.numeric(dados), big.mark=".")
+    
+    tablerStatCard(
+      value = total_formatado,
+      title = "Total de casos",
+      width = 12
+    )
     
   })
+  
+  
+  output$total_mortes_brasil <- renderUI({
+    # 
+    # dados <- dados_covid()
+    # 
+    # total_mortes <- dados %>% pull(mortes) %>% sum(., na.rm = T)
+    # total_formatado <- format(as.numeric(total_mortes), big.mark=".")
+    # 
+    # tablerStatCard(
+    #   value = total_formatado,
+    #   title = "Total de mortes",
+    #   width = 12
+    # )
+    # 
+  })
+  
+  
+  output$total_casos_recuperados_brasil <- renderUI({
+    
+    # dados <- dados_covid()
+    # 
+    # total_curados <- dados %>% pull(casos_curados) %>% sum(., na.rm = T)
+    # total_formatado <- format(as.numeric(total_curados), big.mark=".")
+    # 
+    # tablerStatCard(
+    #   value = total_formatado,
+    #   title = "Total de recuperados",
+    #   width = 12
+    # )
+    
+  })
+  
   
 }

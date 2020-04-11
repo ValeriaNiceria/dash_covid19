@@ -5,8 +5,8 @@ account: valerianiceria
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 1862341
-bundleId: 2859115
+bundleId: 3001241
 url: https://valerianiceria.shinyapps.io/dash_covid19/
-when: 1583549943.47588
+when: 1586641986.30958
 asMultiple: FALSE
 asStatic: FALSE
