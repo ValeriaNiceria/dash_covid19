@@ -60,7 +60,7 @@ server <- function(input, output, session) {
             radioButtons(
               "tipo_plot_tempo",
               "Tipo",
-              choices = c("Novos", "Acumulado"),
+              choices = c("Acumulado", "Novos"),
               inline = T
             )
           ),
