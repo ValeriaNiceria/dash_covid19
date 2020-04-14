@@ -1,3 +1,6 @@
+library(tidyverse)
+library(zoo)
+
 corrigir_data <- function(dados) {
   
   dados <- dados %>% 
