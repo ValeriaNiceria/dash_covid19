@@ -1,7 +1,6 @@
 # dash_covid19
-Dashboard, analisando dados sobre o coronavírus.
 
-![Dashboard](https://valerianiceria.github.io/img/portfolio/covid_shiny.png)
+Dashboard, analisando dados sobre o coronavírus.
 
 **➭** [Projeto online](https://valerianiceria.shinyapps.io/dash_covid19)
 
