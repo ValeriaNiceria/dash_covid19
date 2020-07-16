@@ -17337,11 +17337,11 @@ table.tablesorter thead tr .headerSortDown {
 
 .sidebar,
 .off-canvas-sidebar {
-  background: #ba54f5;
+  /*background: #ba54f5;
   background: -webkit-linear-gradient(0deg, #ba54f5 0%, #e14eca 100%);
   background: -o-linear-gradient(0deg, #ba54f5 0%, #e14eca 100%);
   background: -moz-linear-gradient(0deg, #ba54f5 0%, #e14eca 100%);
-  background: linear-gradient(0deg, #ba54f5 0%, #e14eca 100%);
+  background: linear-gradient(0deg, #ba54f5 0%, #e14eca 100%);*/
   height: calc(100vh - 90px);
   width: 230px;
   position: fixed;
@@ -17351,7 +17351,7 @@ table.tablesorter thead tr .headerSortDown {
   background-size: cover;
   background-position: center center;
   display: block;
-  box-shadow: 0px 0px 45px 0px rgba(0, 0, 0, 0.6);
+  /*box-shadow: 0px 0px 45px 0px rgba(0, 0, 0, 0.6);*/
   margin-top: 80px;
   margin-left: 20px;
   border-radius: 5px;
