@@ -1,0 +1,1 @@
+source("./funcoes/dash/dashPage.R", encoding = "UTF-8")
