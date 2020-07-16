@@ -1,7 +1,9 @@
 
 source("./global.R", encoding = "UTF-8")
 
-ui <- dashPage()
+ui <- dashPage(
+  title = "COVID-19"
+)
 
 server <- function(input, output, session) {
   
